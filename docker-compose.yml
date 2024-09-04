@@ -10,6 +10,14 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
+    command:
+      sh -c "
+        php artisan key:generate --no-interaction &&
+        vendor/bin/phpunit --coverage-html /var/www/html/reports/coverage &&
+        php artisan test --login-junit /var/www/html/tests/report.xml &&
+        xsltproc /var/www/html/phpunit-to-html.xsl /var/www/html/tests/report.xml > /var/www/html/tests/report.html &&
+        php-fpm
+      "
     networks:
       - laravel_network
 
